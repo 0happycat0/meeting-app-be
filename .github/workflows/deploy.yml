@@ -30,6 +30,6 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           script: |
             cd /home/ubuntu/meeting-app
-            docker pull o0happycat0o/meeting-app:latest
-            docker compose down
-            docker compose up -d
+            sudo docker pull o0happycat0o/meeting-app:latest
+            sudo docker-compose down
+            sudo docker-compose up -d
