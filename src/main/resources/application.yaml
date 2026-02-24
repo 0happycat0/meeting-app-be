@@ -1,1 +1,14 @@
-spring.application.name=meeting-app-be
+server:
+  port: 8080
+
+spring:
+  application:
+    name: meeting-app-be
+  datasource:
+    url: ${DB_CONNECTION}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
