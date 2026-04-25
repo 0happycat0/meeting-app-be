@@ -15,7 +15,17 @@ spring:
     show-sql: true
 
   security:
+    user:
+      name: user
+      password: user
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: ${ISSUER_URI}
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+
+jwt:
+  auth:
+    converter:
+      resource-id: ${RESOURCE_ID}
+      principle-attribute: ${PRINCIPLE_ATTRIBUTE}
