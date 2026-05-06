@@ -13,10 +13,13 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "users")
+@Table(name = "users",
+        uniqueConstraints =  {
+            @UniqueConstraint(name = "uk_user_username", columnNames = "username"),
+            @UniqueConstraint(name = "uk_user_email", columnNames = "email")
+        })
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     String id;
     String username;
     String firstName;
