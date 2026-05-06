@@ -29,3 +29,10 @@ jwt:
     converter:
       resource-id: ${RESOURCE_ID}
       principle-attribute: ${PRINCIPLE_ATTRIBUTE}
+
+keycloak:
+  admin:
+    server-url: https://meet.soict.io/auth
+    realm: meeting
+    client-id: ${CLIENT_ID}
+    client-secret: ${CLIENT_SECRET}
