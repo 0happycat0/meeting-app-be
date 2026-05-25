@@ -1,5 +1,6 @@
 package com.happycat.meetingappbe.service;
 
+import com.happycat.meetingappbe.dto.PageResponse;
 import com.happycat.meetingappbe.dto.request.UserCreationRequest;
 import com.happycat.meetingappbe.dto.request.UserUpdateRequest;
 import com.happycat.meetingappbe.dto.response.UserResponse;
@@ -40,8 +41,11 @@ public class UserService {
     @Value("${keycloak.admin.realm}")
     String realm;
 
-    public List<UserResponse> getUsers() {
-        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
+    public PageResponse<UserResponse> getUsers() {
+        return PageResponse.<UserResponse>builder()
+                .items(userRepository.findAll().stream().map(userMapper::toUserResponse).toList())
+                .total(userRepository.count())
+                .build();
     }
 
 //    public List<UserRepresentation> getAllUsers() {
