@@ -2,6 +2,8 @@ server:
   port: 8080
 
 spring:
+  config:
+    import: optional:file:.env[.properties]
   application:
     name: meeting-app-be
   datasource:
@@ -36,3 +38,10 @@ keycloak:
     realm: meeting
     client-id: ${CLIENT_ID}
     client-secret: ${CLIENT_SECRET}
+
+livekit:
+  api-url: ${LIVEKIT_API_URL:http://localhost:7880}
+  ws-url: ${LIVEKIT_WS_URL:ws://localhost:7880}
+  api-key: ${LIVEKIT_API_KEY}
+  api-secret: ${LIVEKIT_API_SECRET}
+  token-ttl-seconds: ${LIVEKIT_TOKEN_TTL_SECONDS:900}
