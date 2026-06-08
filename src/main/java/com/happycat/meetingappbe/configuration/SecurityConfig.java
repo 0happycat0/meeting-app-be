@@ -23,10 +23,19 @@ import java.util.List;
 public class SecurityConfig {
     private final JwtAuthConverter jwtAuthConverter;
 
+    private static final String[] PUBLIC_SWAGGER_ENDPOINTS = {
+            "/v3/api-docs/**",
+            "/v3/api-docs.yaml",
+            "/swagger-ui/**",
+            "/swagger-ui.html"
+    };
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
         httpSecurity.authorizeHttpRequests(request ->
-                request.anyRequest().authenticated()
+                request
+                        .requestMatchers(PUBLIC_SWAGGER_ENDPOINTS).permitAll()
+                        .anyRequest().authenticated()
         );
 
         httpSecurity.oauth2ResourceServer(oauth2 ->
