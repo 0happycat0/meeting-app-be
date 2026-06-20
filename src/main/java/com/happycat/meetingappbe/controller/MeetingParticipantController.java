@@ -2,9 +2,11 @@ package com.happycat.meetingappbe.controller;
 
 import com.happycat.meetingappbe.dto.ApiResponse;
 import com.happycat.meetingappbe.dto.PageResponse;
+import com.happycat.meetingappbe.dto.request.LiveKitJoinTokenRequest;
 import com.happycat.meetingappbe.dto.response.LiveKitJoinTokenResponse;
 import com.happycat.meetingappbe.dto.response.MeetingParticipantResponse;
 import com.happycat.meetingappbe.service.MeetingParticipantService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -124,11 +126,12 @@ public class MeetingParticipantController {
     @PreAuthorize(USER_OR_ADMIN)
     ApiResponse<LiveKitJoinTokenResponse> issueJoinToken(
             @PathVariable String meetingId,
+            @RequestBody(required = false) @Valid LiveKitJoinTokenRequest request,
             JwtAuthenticationToken authentication
     ) {
         return ApiResponse.<LiveKitJoinTokenResponse>builder()
                 .message("Issue LiveKit token successfully")
-                .result(participantService.issueJoinToken(meetingId, subject(authentication)))
+                .result(participantService.issueJoinToken(meetingId, subject(authentication), request))
                 .build();
     }
 

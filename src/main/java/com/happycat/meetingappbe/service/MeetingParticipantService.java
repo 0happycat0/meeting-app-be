@@ -1,6 +1,7 @@
 package com.happycat.meetingappbe.service;
 
 import com.happycat.meetingappbe.dto.PageResponse;
+import com.happycat.meetingappbe.dto.request.LiveKitJoinTokenRequest;
 import com.happycat.meetingappbe.dto.response.LiveKitJoinTokenResponse;
 import com.happycat.meetingappbe.dto.response.MeetingParticipantResponse;
 import com.happycat.meetingappbe.entity.*;
@@ -36,6 +37,7 @@ public class MeetingParticipantService {
     UserRepository userRepository;
     MeetingParticipantMapper participantMapper;
     LiveKitAccessService liveKitAccessService;
+    MeetingTranscriptEventService transcriptEventService;
 
     @Transactional
     public MeetingParticipantResponse requestWaitingRoomByJoinCode(String displayJoinCode, String userId) {
@@ -155,7 +157,11 @@ public class MeetingParticipantService {
     }
 
     @Transactional
-    public LiveKitJoinTokenResponse issueJoinToken(String meetingId, String userId) {
+    public LiveKitJoinTokenResponse issueJoinToken(
+            String meetingId,
+            String userId,
+            LiveKitJoinTokenRequest request
+    ) {
         Meeting meeting = findMeeting(meetingId);
         requireMeetingOpen(meeting);
 
@@ -169,7 +175,8 @@ public class MeetingParticipantService {
                     meeting,
                     participant.getUser(),
                     participant.getRole(),
-                    tokenIdentifier);
+                    tokenIdentifier,
+                    requestedDisplayName(request));
             participant.setParticipationStatus(ParticipationStatus.JOINED);
             if (participant.getJoinedAt() == null) {
                 participant.setJoinedAt(Instant.now());
@@ -206,7 +213,10 @@ public class MeetingParticipantService {
         participant.setParticipationStatus(ParticipationStatus.LEFT);
         participant.setLeftAt(Instant.now());
 
-        return participantMapper.toResponse(participantRepository.save(participant));
+        MeetingParticipant savedParticipant = participantRepository.save(participant);
+        transcriptEventService.disconnectUser(meetingId, userId);
+
+        return participantMapper.toResponse(savedParticipant);
     }
 
     @Transactional
@@ -232,7 +242,10 @@ public class MeetingParticipantService {
         participant.setRemovedAt(Instant.now());
         participant.setRemovedBy(remover);
 
-        return participantMapper.toResponse(participantRepository.save(participant));
+        MeetingParticipant savedParticipant = participantRepository.save(participant);
+        transcriptEventService.disconnectUser(meetingId, participant.getUser().getId());
+
+        return participantMapper.toResponse(savedParticipant);
     }
 
     private MeetingParticipant moveExistingToWaiting(MeetingParticipant participant, JoinSource joinSource) {
@@ -288,6 +301,13 @@ public class MeetingParticipantService {
                 && participationStatus != ParticipationStatus.JOINED) {
             throw new AppException(ErrorCode.PARTICIPANT_STATE_INVALID);
         }
+    }
+
+    private String requestedDisplayName(LiveKitJoinTokenRequest request) {
+        if (request == null) {
+            return null;
+        }
+        return request.getName();
     }
 
     private MeetingTokenLog successTokenLog(

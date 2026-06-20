@@ -26,6 +26,10 @@ spring:
           issuer-uri: ${ISSUER_URI}
           jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
 
+logging:
+  level:
+    com.happycat.meetingappbe.service: DEBUG
+
 jwt:
   auth:
     converter:

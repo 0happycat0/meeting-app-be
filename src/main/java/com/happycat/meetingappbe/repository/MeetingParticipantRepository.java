@@ -41,6 +41,7 @@ public interface MeetingParticipantRepository extends JpaRepository<MeetingParti
                     and i.status = :acceptedInvitationStatus
                 )
               )
+              and p.participationStatus <> :removedParticipationStatus
               and (:status is null or m.status = :status)
               and (:type is null or m.meetingType = :type)
             order by
@@ -53,6 +54,7 @@ public interface MeetingParticipantRepository extends JpaRepository<MeetingParti
             @Param("status") MeetingStatus status,
             @Param("type") MeetingType type,
             @Param("invitedParticipationStatus") ParticipationStatus invitedParticipationStatus,
+            @Param("removedParticipationStatus") ParticipationStatus removedParticipationStatus,
             @Param("acceptedInvitationStatus") InvitationStatus acceptedInvitationStatus
     );
 

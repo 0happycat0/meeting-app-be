@@ -47,6 +47,9 @@ public enum ErrorCode {
     PARTICIPANT_STATE_INVALID(4203, "Participant status does not allow this action", HttpStatus.CONFLICT),
 
     LIVEKIT_SERVICE_UNAVAILABLE(4301, "LiveKit service unavailable", HttpStatus.BAD_GATEWAY),
+    LIVEKIT_DISPLAY_NAME_INVALID(4302, "LiveKit display name is invalid", HttpStatus.BAD_REQUEST),
+
+    TRANSCRIPT_SEGMENT_INVALID(4401, "Transcript segment is invalid", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
