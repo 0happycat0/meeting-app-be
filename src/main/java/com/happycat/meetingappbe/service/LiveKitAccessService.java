@@ -26,14 +26,15 @@ public class LiveKitAccessService {
             Meeting meeting,
             User user,
             ParticipantRole role,
-            String tokenIdentifier
+            String tokenIdentifier,
+            String requestedDisplayName
     ) {
         Instant issuedAt = Instant.now();
         Instant expiresAt = issuedAt.plusSeconds(properties.getTokenTtlSeconds());
 
         AccessToken token = new AccessToken(properties.getApiKey(), properties.getApiSecret());
         token.setIdentity(user.getId());
-        token.setName(displayName(user));
+        token.setName(displayName(user, requestedDisplayName));
         token.setTtl(properties.getTokenTtlSeconds() * 1000);
         token.setMetadata("""
                 {"tokenIdentifier":"%s","role":"%s"}
@@ -72,7 +73,10 @@ public class LiveKitAccessService {
         }
     }
 
-    private String displayName(User user) {
+    String displayName(User user, String requestedDisplayName) {
+        if (requestedDisplayName != null && !requestedDisplayName.trim().isBlank()) {
+            return requestedDisplayName.trim();
+        }
         String firstName = user.getFirstName() == null ? "" : user.getFirstName().trim();
         String lastName = user.getLastName() == null ? "" : user.getLastName().trim();
         String fullName = (firstName + " " + lastName).trim();
