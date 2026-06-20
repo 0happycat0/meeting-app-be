@@ -94,9 +94,12 @@ public class MeetingController {
 
     @GetMapping("/join/{joinCode}")
     @PreAuthorize(USER_OR_ADMIN)
-    ApiResponse<JoinMeetingResponse> findByJoinCode(@PathVariable String joinCode) {
+    ApiResponse<JoinMeetingResponse> findByJoinCode(
+            @PathVariable String joinCode,
+            JwtAuthenticationToken authentication
+    ) {
         return ApiResponse.<JoinMeetingResponse>builder()
-                .result(meetingService.findByJoinCode(joinCode))
+                .result(meetingService.findByJoinCode(joinCode, subject(authentication), isAdmin(authentication)))
                 .build();
     }
 

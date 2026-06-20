@@ -87,6 +87,7 @@ public class MeetingService {
                         status,
                         type,
                         ParticipationStatus.INVITED,
+                        ParticipationStatus.REMOVED,
                         InvitationStatus.ACCEPTED)
                 .stream()
                 .map(MeetingParticipant::getMeeting)
@@ -131,10 +132,11 @@ public class MeetingService {
         return meetingMapper.toMeetingResponse(meetingRepository.save(meeting));
     }
 
-    public JoinMeetingResponse findByJoinCode(String displayJoinCode) {
+    public JoinMeetingResponse findByJoinCode(String displayJoinCode, String userId, boolean admin) {
         String joinCode = normalizeJoinCode(displayJoinCode);
         Meeting meeting = meetingRepository.findByJoinCode(joinCode)
                 .orElseThrow(() -> new AppException(ErrorCode.MEETING_NOT_FOUND));
+        requireCanResolveJoinCode(meeting, userId, admin);
         return meetingMapper.toJoinMeetingResponse(meeting);
     }
 
@@ -174,6 +176,21 @@ public class MeetingService {
                 && !hasAcceptedInvitation(meeting.getId(), userId)) {
             throw new AppException(ErrorCode.MEETING_ACCESS_DENIED);
         }
+        if (participant.getParticipationStatus() == ParticipationStatus.REMOVED) {
+            throw new AppException(ErrorCode.MEETING_ACCESS_DENIED);
+        }
+    }
+
+    private void requireCanResolveJoinCode(Meeting meeting, String userId, boolean admin) {
+        if (admin || meeting.getHost().getId().equals(userId)) {
+            return;
+        }
+
+        participantRepository.findByMeeting_IdAndUser_Id(meeting.getId(), userId)
+                .filter(participant -> participant.getParticipationStatus() == ParticipationStatus.REMOVED)
+                .ifPresent(participant -> {
+                    throw new AppException(ErrorCode.MEETING_ACCESS_DENIED);
+                });
     }
 
     private boolean hasAcceptedInvitation(String meetingId, String userId) {
