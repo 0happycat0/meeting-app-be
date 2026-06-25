@@ -38,7 +38,7 @@ jwt:
 
 keycloak:
   admin:
-    server-url: https://meet.soict.io/auth
+    server-url: ${KC_SERVER_URL}
     realm: meeting
     client-id: ${CLIENT_ID}
     client-secret: ${CLIENT_SECRET}
@@ -49,3 +49,13 @@ livekit:
   api-key: ${LIVEKIT_API_KEY}
   api-secret: ${LIVEKIT_API_SECRET}
   token-ttl-seconds: ${LIVEKIT_TOKEN_TTL_SECONDS:900}
+
+llm:
+  base-url: ${LLM_BASE_URL}
+  chat-completions-path: ${LLM_CHAT_COMPLETIONS_PATH}
+  model: ${LLM_MODEL}
+  timeout-seconds: ${LLM_TIMEOUT_SECONDS}
+  proxy:
+    enabled: ${LLM_PROXY_ENABLED:false}
+    host: ${LLM_PROXY_HOST}
+    port: ${LLM_PROXY_PORT}

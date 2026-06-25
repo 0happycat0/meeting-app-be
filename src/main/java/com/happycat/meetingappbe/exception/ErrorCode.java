@@ -50,6 +50,11 @@ public enum ErrorCode {
     LIVEKIT_DISPLAY_NAME_INVALID(4302, "LiveKit display name is invalid", HttpStatus.BAD_REQUEST),
 
     TRANSCRIPT_SEGMENT_INVALID(4401, "Transcript segment is invalid", HttpStatus.BAD_REQUEST),
+
+    MEETING_MINUTES_NOT_FOUND(4501, "Meeting minutes not found", HttpStatus.NOT_FOUND),
+    MEETING_MINUTES_NO_TRANSCRIPT(4502, "Meeting has no transcript content", HttpStatus.CONFLICT),
+    MEETING_MINUTES_GENERATION_FAILED(4503, "Meeting minutes generation failed", HttpStatus.BAD_GATEWAY),
+    MEETING_MINUTES_STATE_INVALID(4504, "Meeting minutes status does not allow this action", HttpStatus.CONFLICT),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
