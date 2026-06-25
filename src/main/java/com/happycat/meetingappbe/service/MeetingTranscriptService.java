@@ -7,6 +7,7 @@ import com.happycat.meetingappbe.dto.response.MeetingTranscriptSegmentResponse;
 import com.happycat.meetingappbe.entity.Meeting;
 import com.happycat.meetingappbe.entity.MeetingParticipant;
 import com.happycat.meetingappbe.entity.MeetingTranscriptSegment;
+import com.happycat.meetingappbe.enums.MeetingStatus;
 import com.happycat.meetingappbe.enums.ParticipationStatus;
 import com.happycat.meetingappbe.exception.AppException;
 import com.happycat.meetingappbe.exception.ErrorCode;
@@ -44,6 +45,7 @@ public class MeetingTranscriptService {
 
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new AppException(ErrorCode.MEETING_NOT_FOUND));
+        requireMeetingCanAcceptTranscript(meeting);
         MeetingParticipant participant = participantRepository.findByMeeting_IdAndUser_Id(meetingId, userId)
                 .orElseThrow(() -> new AppException(ErrorCode.PARTICIPANT_NOT_FOUND));
         requireCanUploadTranscript(participant);
@@ -96,6 +98,12 @@ public class MeetingTranscriptService {
         ParticipationStatus status = participant.getParticipationStatus();
         if (status != ParticipationStatus.JOINED) {
             throw new AppException(ErrorCode.PARTICIPANT_STATE_INVALID);
+        }
+    }
+
+    private void requireMeetingCanAcceptTranscript(Meeting meeting) {
+        if (meeting.getStatus() == MeetingStatus.ENDED || meeting.getStatus() == MeetingStatus.CANCELLED) {
+            throw new AppException(ErrorCode.MEETING_STATE_INVALID);
         }
     }
 
